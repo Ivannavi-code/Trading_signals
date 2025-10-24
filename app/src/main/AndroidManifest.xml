@@ -6,7 +6,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ChameleonKeyboard"
+        android:theme="@style/Theme.ChameleonKeyboard">
 
         <activity
             android:name=".MainActivity"
