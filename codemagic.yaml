@@ -3,17 +3,10 @@ workflows:
     name: Android Build
     max_build_duration: 60
     environment:
-      vars:
-        # Variables opcionales para firmar APK
-        ANDROID_KEYSTORE: ""
-        ANDROID_KEYSTORE_PASSWORD: ""
-        ANDROID_KEY_ALIAS: ""
-        ANDROID_KEY_PASSWORD: ""
       android:
         jdk: openjdk11
         compileSdk: 33
         buildTools: "33.0.2"
-        ndk: 23.1.7779620
     scripts:
       - name: Clean project
         script: ./gradlew clean
@@ -23,7 +16,3 @@ workflows:
         script: ./gradlew assembleRelease
     artifacts:
       - app/build/outputs/**/*.apk
-    publishing:
-      email:
-        recipients:
-          - tuemail@example.com
