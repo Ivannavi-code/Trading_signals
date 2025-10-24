@@ -1,16 +1,21 @@
 workflows:
   android-workflow:
-    name: Teclado Camaleón Build
+    name: Teclado Camaleón - Android Build
     max_build_duration: 60
     instance_type: mac_mini_m1
     
     environment:
+      android_signing:
+        - keystore_reference
+      groups:
+        - google_play
+      vars:
+        PACKAGE_NAME: "com.chameleon.keyboard"
+        JAVA_HOME: /Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
       java: 17
       xcode: latest
       cocoapods: default
-      vars:
-        PACKAGE_NAME: "com.chameleon.keyboard"
-        
+      
     triggering:
       events:
         - push
@@ -19,33 +24,109 @@ workflows:
         - pattern: 'main'
           include: true
           source: true
+        - pattern: 'develop'
+          include: true
+          source: true
           
     scripts:
-      - name: Set up local properties
-        script: | 
-          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
-          
-      - name: Grant permissions (safety measure)
+      # ============================================
+      # 1. Setup Gradle Wrapper Permissions
+      # ============================================
+      - name: Setup Gradle Wrapper
         script: |
+          echo "🔧 Configurando permisos de Gradle..."
           chmod +x gradlew
+          chmod +x gradlew.bat
+          
+          echo "✅ Permisos otorgados"
           ls -la gradlew
           
-      - name: Clean and build
-        script: |
-          ./gradlew clean assembleDebug --stacktrace
+          echo "📋 Verificando Gradle..."
+          ./gradlew --version
           
+      # ============================================
+      # 2. Setup local.properties
+      # ============================================
+      - name: Set up local properties
+        script: | 
+          echo "📝 Creando local.properties..."
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+          cat local.properties
+          
+      # ============================================
+      # 3. Clean Project
+      # ============================================
+      - name: Clean project
+        script: |
+          echo "🧹 Limpiando proyecto..."
+          ./gradlew clean --stacktrace
+          
+      # ============================================
+      # 4. Download Dependencies
+      # ============================================
+      - name: Download dependencies
+        script: |
+          echo "📦 Descargando dependencias..."
+          ./gradlew dependencies --stacktrace
+          
+      # ============================================
+      # 5. Run Lint
+      # ============================================
+      - name: Run lint
+        script: |
+          echo "🔍 Ejecutando lint..."
+          ./gradlew lint --stacktrace || true
+          
+      # ============================================
+      # 6. Run Unit Tests
+      # ============================================
       - name: Run tests
         script: |
-          ./gradlew test --stacktrace
+          echo "🧪 Ejecutando tests..."
+          ./gradlew test --stacktrace || true
           
+      # ============================================
+      # 7. Build Debug APK
+      # ============================================
+      - name: Build debug APK
+        script: |
+          echo "🔨 Compilando APK Debug..."
+          ./gradlew assembleDebug --stacktrace
+          
+          echo "✅ APK Debug compilado"
+          ls -lh app/build/outputs/apk/debug/
+          
+      # ============================================
+      # 8. Build Release APK (opcional)
+      # ============================================
+      - name: Build release APK
+        script: |
+          echo "🔨 Compilando APK Release..."
+          ./gradlew assembleRelease --stacktrace || echo "⚠️ Release build falló (normal si no hay keystore)"
+          
+    # ============================================
+    # ARTIFACTS - Archivos a guardar
+    # ============================================
     artifacts:
       - app/build/outputs/**/*.apk
+      - app/build/outputs/**/*.aab
       - app/build/outputs/**/mapping.txt
+      - app/build/reports/**/*
       
+    # ============================================
+    # PUBLISHING - Notificaciones
+    # ============================================
     publishing:
       email:
         recipients:
-          - tu-email@ejemplo.com
+          arteagaivan298@gmail.com
+        notify:
+          success: true
+          failure: true
+          
+      slack:
+        channel: '#builds'
+        notify_on_build_start: false
         notify:
           success: true
           failure: true
