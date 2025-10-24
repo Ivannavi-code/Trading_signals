@@ -1,0 +1,29 @@
+workflows:
+  android-workflow:
+    name: Android Build Workflow
+    max_build_duration: 60
+    environment:
+      flutter: none  # No es un proyecto Flutter
+      android:
+        version: latest
+        build_tools: latest
+        ndk: latest
+      vars:
+        # Aquí puedes agregar variables de entorno si necesitas firmar APK
+        # Example: ANDROID_KEYSTORE, ANDROID_KEYSTORE_PASSWORD, etc.
+    scripts:
+      - name: Clean project
+        script: ./gradlew clean
+      - name: Build debug APK
+        script: ./gradlew assembleDebug
+      - name: Build release APK
+        script: ./gradlew assembleRelease
+    artifacts:
+      - app/build/outputs/apk/debug/app-debug.apk
+      - app/build/outputs/apk/release/app-release.apk
+    publishing:
+      email:
+        recipients:
+          - tuemail@example.com  # Opcional: recibir notificaciones
+        on_build_success: true
+        on_build_failure: true
