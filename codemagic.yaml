@@ -119,7 +119,7 @@ workflows:
     publishing:
       email:
         recipients:
-          arteagaivan298@gmail.com
+          - tu-email@ejemplo.com
         notify:
           success: true
           failure: true
