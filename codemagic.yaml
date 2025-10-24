@@ -3,10 +3,10 @@ workflows:
     name: Android Build
     max_build_duration: 60
     environment:
-      android:
-        jdk: openjdk11
-        compileSdk: 33
-        buildTools: "33.0.2"
+      # Configuración de Android directamente aquí, sin 'android:' extra
+      jdk: openjdk11
+      compileSdk: 33
+      buildTools: "33.0.2"
     scripts:
       - name: Clean project
         script: ./gradlew clean
