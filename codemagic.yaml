@@ -4,11 +4,10 @@ workflows:
     max_build_duration: 60
     environment:
       vars:
-        # Variables de entorno opcionales, por ejemplo para firmar APK
-        ANDROID_KEYSTORE: ""
-        ANDROID_KEYSTORE_PASSWORD: ""
-        ANDROID_KEY_ALIAS: ""
-        ANDROID_KEY_PASSWORD: ""
+        ANDROID_KEYSTORE: "dummy.keystore"
+        ANDROID_KEYSTORE_PASSWORD: "dummy_password"
+        ANDROID_KEY_ALIAS: "dummy_alias"
+        ANDROID_KEY_PASSWORD: "dummy_password"
     scripts:
       - name: Clean project
         script: ./gradlew clean
