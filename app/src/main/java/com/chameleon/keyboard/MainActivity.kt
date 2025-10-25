@@ -130,3 +130,4 @@ class MainActivity : AppCompatActivity() {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
         imm.showInputMethodPicker()
     }
+}
